@@ -317,6 +317,7 @@ mod octal_escapes;
 mod open_options;
 mod option_env_unwrap;
 mod option_if_let_else;
+mod order_of_use;
 mod overflow_check_conditional;
 mod panic_in_result_fn;
 mod panic_unimplemented;
@@ -853,6 +854,7 @@ pub fn register_plugins(store: &mut rustc_lint::LintStore, sess: &Session, conf:
     store.register_late_pass(|| Box::new(trailing_empty_array::TrailingEmptyArray));
     store.register_early_pass(|| Box::new(octal_escapes::OctalEscapes));
     store.register_late_pass(|| Box::new(needless_late_init::NeedlessLateInit));
+    store.register_early_pass(|| Box::new(order_of_use::OrderOfUse));
     // add lints here, do not remove this comment, it's used in `new_lint`
 }
 

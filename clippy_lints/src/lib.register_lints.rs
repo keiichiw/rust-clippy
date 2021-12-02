@@ -385,6 +385,7 @@ store.register_lints(&[
     open_options::NONSENSICAL_OPEN_OPTIONS,
     option_env_unwrap::OPTION_ENV_UNWRAP,
     option_if_let_else::OPTION_IF_LET_ELSE,
+    order_of_use::ORDER_OF_USE,
     overflow_check_conditional::OVERFLOW_CHECK_CONDITIONAL,
     panic_in_result_fn::PANIC_IN_RESULT_FN,
     panic_unimplemented::PANIC,
