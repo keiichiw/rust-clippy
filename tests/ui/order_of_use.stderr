@@ -1,0 +1,33 @@
+error: Put a block of `use` here
+   |
+   = note: `-D clippy::order-of-use` implied by `-D warnings`
+
+error: Put a block of `use` here
+  --> $DIR/order_of_use.rs:9:1
+   |
+LL | use crate::myself::*;
+   | ^^^^^^^^^^^^^^^^^^^^^ help: try: `use crate::myself::*;`
+
+error: Put a block of `use` here
+  --> $DIR/order_of_use.rs:10:1
+   |
+LL | / use order_of_use_helper::a::{
+LL | |     b1::{c2, *},
+LL | |     b2::c1,
+LL | | };
+   | |__^ help: try: `use order_of_use_helper::a::{b1::{c2, *}, b2::c1};`
+
+error: Put a block of `use` here
+  --> $DIR/order_of_use.rs:14:1
+   |
+LL | use std::io;
+   | ^^^^^^^^^^^^ help: try: `use std::io;`
+
+error: Put a block of `use` here
+  --> $DIR/order_of_use.rs:15:1
+   |
+LL | use {order_of_use_helper::*, std::fs};
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `use {order_of_use_helper::*, std::fs};`
+
+error: aborting due to 5 previous errors
+

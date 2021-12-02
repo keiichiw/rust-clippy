@@ -7,12 +7,29 @@
 #![allow(unused_imports)]
 
 use crate::myself::*;
-use order_of_use_helper::a::{
-    b1::{c2, *},
-    b2::c1,
-};
+
+use crate::myself::*;
+
+use crate::myself::*;
+
+use order_of_use_helper::a::{b1::{c2, *}, b2::c1};
+
+use order_of_use_helper::a::{b1::{c2, *}, b2::c1};
+
+use order_of_use_helper::a::{b1::{c2, *}, b2::c1};
+
 use std::io;
+
+use std::io;
+
+use std::io;
+
 use {order_of_use_helper::*, std::fs};
+
+use {order_of_use_helper::*, std::fs};
+
+use {order_of_use_helper::*, std::fs};
+
 
 mod myself {
     pub fn a() {}
