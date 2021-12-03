@@ -38,7 +38,9 @@ impl EarlyLintPass for OrderOfUse {
 
 fn check_use_order<'ecx>(ectx: &EarlyContext<'ecx>, mod_items: &[P<Item>]) {
     let use_trees = collect_use_trees(mod_items);
-    check_use_trees(ectx, &use_trees);
+    if !check_use_trees(ectx, &use_trees) {
+        return;
+    }
 
     let (std_vec, other_vec, crate_vec) = make_groups(&use_trees);
     let use_block_span = find_use_block_span(mod_items);
@@ -93,11 +95,15 @@ fn category_order(category: Category) -> usize {
     }
 }
 
-fn find_category(use_tree: &UseTree) -> Category {
-    match &*use_tree.prefix.segments[0].ident.as_str() {
-        "super" | "crate" => Category::SuperOrCrate,
-        "std" => Category::Std,
-        _ => Category::Other,
+fn find_category(use_tree: &UseTree) -> Option<Category> {
+    if use_tree.prefix.segments.len() == 0 {
+        None
+    } else {
+        Some(match &*use_tree.prefix.segments[0].ident.as_str() {
+            "super" | "crate" => Category::SuperOrCrate,
+            "std" => Category::Std,
+            _ => Category::Other,
+        })
     }
 }
 
@@ -109,30 +115,41 @@ fn is_adjuscent<'ecx>(ectx: &EarlyContext<'ecx>, span1: &Span, span2: &Span) -> 
     loc1_max + 1 >= loc2_min
 }
 
-fn check_use_trees<'ecx>(ectx: &EarlyContext<'ecx>, use_trees: &[&UseTree]) {
+// Returns whether we should run autofix.
+fn check_use_trees<'ecx>(ectx: &EarlyContext<'ecx>, use_trees: &[&UseTree]) -> bool {
     if use_trees.len() == 0 {
-        return;
+        return false;
     }
 
+    let mut has_error = false;
     let mut iter = use_trees.iter().peekable();
     loop {
         let prev_use_tree = *iter.next().unwrap();
         let next = iter.peek();
         if next.is_none() {
-            return;
+            // End of use block.
+            return has_error;
         }
         let next_use_tree = *next.unwrap();
         let cat1 = find_category(prev_use_tree);
         let cat2 = find_category(next_use_tree);
+        if cat1.is_none() || cat2.is_none() {
+            return false;
+        }
+        let cat1 = cat1.unwrap();
+        let cat2 = cat2.unwrap();
         if cat1 == cat2 {
             if !is_adjuscent(ectx, &prev_use_tree.span, &next_use_tree.span) {
                 // eprint!("Lint error found!! Found empty line separation in a group: {:?}\n", prev_use_tree.span);
+                has_error = true;
             }
         } else {
             if category_order(cat1) > category_order(cat2) {
                 // eprint!("Lint Error found!! The order of the use groups is not following style guide: {:?}\n", prev_use_tree.span);
+                has_error = true;
             } else if is_adjuscent(ectx, &prev_use_tree.span, &next_use_tree.span) {
                 // eprint!("Lint Error found!! Different use groups should be separated by an empty line: {:?}\n", prev_use_tree.span);
+                has_error = true;
             }
         }
     }
@@ -144,7 +161,7 @@ fn make_groups<'a>(use_trees: &[&'a UseTree]) -> (Vec<&'a UseTree>, Vec<&'a UseT
     let mut crate_vec = vec![];
 
     for &use_tree in use_trees.iter() {
-        match find_category(use_tree) {
+        match find_category(use_tree).unwrap() {
             Category::Std => std_vec.push(use_tree),
             Category::Other => other_vec.push(use_tree),
             Category::SuperOrCrate => crate_vec.push(use_tree),
