@@ -1,0 +1,25 @@
+error: Put a block of `use` here
+  --> $DIR/order_of_use.rs:23:5
+   |
+LL | /     use base::hoge;
+LL | |
+LL | |     use base::fuga::{a, b};
+LL | |     use base::test::*;
+...  |
+LL | |     use crate::x::y;
+LL | |     use crate::z;
+   | |_________________^
+   |
+   = note: `-D clippy::order-of-use` implied by `-D warnings`
+help: try
+   |
+LL ~     use std::path;
+LL + 
+LL + use base::hoge;
+LL + use base::fuga::{a, b};
+LL + use base::test::*;
+LL + 
+ ...
+
+error: aborting due to previous error
+

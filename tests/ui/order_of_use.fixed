@@ -20,14 +20,16 @@ mod testing {
         }
     }
 
-    use base::hoge;
-
-    use base::fuga::{a, b};
-    use base::test::*;
     use std::path;
-    use crate::x;
-    use crate::x::y;
-    use crate::z;
+
+use base::hoge;
+use base::fuga::{a, b};
+use base::test::*;
+
+use crate::x;
+use crate::x::y;
+use crate::z;
+
 }
 
 fn main() {
